@@ -299,7 +299,7 @@
 }
 
 - (CGFloat)totalHeight {
-    [self.superview setNeedsLayout];
+    [self setNeedsLayout];
     return self.height;
 }
 
