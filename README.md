@@ -1,6 +1,6 @@
 # FeatureCollection
 
-一些功能封装的合集
+一些功能封装的合集（只作为学习的记录，不考虑编译错误问题）
 
 ### ZBHYMDDatePickerView
 
