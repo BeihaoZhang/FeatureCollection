@@ -257,17 +257,17 @@ NSString * const ContainerDataKey = @"ContainerData";
     [super layoutSubviews];
     for (UIButton *button in self.titleButtonArray) {
         [button setImage:self.indicatorNormalImage forState:UIControlStateNormal];
-        [self updateButtonEdgeInsetsWithButton:button];
         if (self.fontSize) {
             button.titleLabel.font = [UIFont systemFontOfSize:self.fontSize];
         }
+        [self updateButtonEdgeInsetsWithButton:button];
     }
 }
 
 - (void)createUI {
     CGSize buttonSize = CGSizeMake(self.frame.size.width / self.itemTitles.count, self.frame.size.height);
     CGFloat originX = 0.0;
-    NSMutableArray *tempTitleLabelArray = [NSMutableArray arrayWithCapacity:self.itemTitles.count];
+    NSMutableArray *tempTitleButtonArray = [NSMutableArray arrayWithCapacity:self.itemTitles.count];
     for (int i = 0; i < self.itemTitles.count; i++) {
         UIButton *button = [[UIButton alloc] init];
         button.frame = CGRectMake(originX, 0, buttonSize.width, buttonSize.height);
@@ -276,9 +276,9 @@ NSString * const ContainerDataKey = @"ContainerData";
         [button setTitle:self.itemTitles[i] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(buttonClick:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:button];
-        [tempTitleLabelArray addObject:button];
+        [tempTitleButtonArray addObject:button];
     }
-    self.titleButtonArray = [tempTitleLabelArray copy];
+    self.titleButtonArray = [tempTitleButtonArray copy];
     
     [self addSubview:self.bottomLineView];
 }
