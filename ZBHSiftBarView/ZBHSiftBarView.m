@@ -260,6 +260,7 @@ NSString * const ContainerDataKey = @"ContainerData";
         if (self.fontSize) {
             button.titleLabel.font = [UIFont systemFontOfSize:self.fontSize];
         }
+        [self configNormalStateWithButton:button];
         [self updateButtonEdgeInsetsWithButton:button];
     }
 }
