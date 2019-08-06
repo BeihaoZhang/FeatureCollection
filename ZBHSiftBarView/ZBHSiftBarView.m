@@ -285,10 +285,16 @@ NSString * const ContainerDataKey = @"ContainerData";
 }
 
 - (void)updateButtonEdgeInsetsWithButton:(UIButton *)button {
-    CGFloat space = 5;
-    button.titleEdgeInsets = UIEdgeInsetsMake(0, - (button.currentImage.size.width + space), 0, button.currentImage.size.width);
-    CGFloat titleWidth = [button.currentTitle boundingRectWithSize:button.frame.size options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: button.titleLabel.font} context:nil].size.width;
-    button.imageEdgeInsets = UIEdgeInsetsMake(0, ceilf(titleWidth), 0, -ceilf(titleWidth));
+    CGFloat titleLabelWidth = button.titleLabel.frame.size.width;
+    CGFloat space = 6;
+    CGFloat imageWidth = button.currentImage.size.width;
+    // 系统默认：图片在左，文字在右
+    button.titleEdgeInsets = UIEdgeInsetsMake(0, -(imageWidth + space / 2), 0, imageWidth + space / 2);
+    button.imageEdgeInsets = UIEdgeInsetsMake(0, titleLabelWidth + space / 2, 0, -(titleLabelWidth + space / 2));
+    if (CGRectGetMaxX(button.imageView.frame) > button.frame.size.width) { // 说明超出边界了
+        button.titleEdgeInsets = UIEdgeInsetsMake(0, -imageWidth, 0, imageWidth);
+        button.imageEdgeInsets = UIEdgeInsetsMake(0, titleLabelWidth, 0, -titleLabelWidth);
+    }
 }
 
 - (UIView *)bottomLineView {
