@@ -285,8 +285,12 @@ NSString * const ContainerDataKey = @"ContainerData";
 }
 
 - (void)updateButtonEdgeInsetsWithButton:(UIButton *)button {
+    // 防止button.titleLabel获取到的size为0的情况
+    [button setNeedsLayout];
+    [button layoutIfNeeded];
+    
     CGFloat titleLabelWidth = button.titleLabel.frame.size.width;
-    CGFloat space = 6;
+    CGFloat space = 4;
     CGFloat imageWidth = button.currentImage.size.width;
     // 系统默认：图片在左，文字在右
     button.titleEdgeInsets = UIEdgeInsetsMake(0, -(imageWidth + space / 2), 0, imageWidth + space / 2);
