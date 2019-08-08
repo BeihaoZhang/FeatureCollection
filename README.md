@@ -8,7 +8,3 @@
 ### ZBHSiftBarView
 
 筛选条的封装。创建展开筛选条下方的视图，该视图需要遵守协议 `ZBHSiftContainerViewDelegate`，筛选条上的按钮展开和收起时机不用做判断。目的是为了让筛选条和展开的 view 进行隔离，达到解耦的目的。
-
-### ZBHInputAndButtonChoiceView
-
-封装了按钮的排列布局配置，视图上的 UITextField 可以无视。
