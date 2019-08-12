@@ -191,6 +191,18 @@ NSString * const ContainerDataKey = @"ContainerData";
     UIButton *hiddenButton = self.titleButtonArray[index];
     
     UIView<ZBHSiftContainerViewDelegate> *view = self.containerViewDict[@(index)][ContainerViewKey];
+    
+    // 防止view的高度更新后，展开时返回旧的高度值
+    NSString *oldFrameStr = self.containerViewDict[@(index)][ContainerViewFrameKey];
+    CGRect oldFrame = CGRectFromString(oldFrameStr);
+    CGSize size = oldFrame.size;
+    size.height = view.frame.size.height;
+    oldFrame.size = size;
+    NSString *newFrameStr = NSStringFromCGRect(oldFrame);
+    NSMutableDictionary *dict = [self.containerViewDict[@(index)] mutableCopy];
+    [dict setObject:newFrameStr forKey:ContainerViewFrameKey];
+    self.containerViewDict[@(index)] = [dict copy];
+    
     [UIView animateWithDuration:0.15 animations:^{
         CGRect frame = view.frame;
         frame.size.height = 0;
