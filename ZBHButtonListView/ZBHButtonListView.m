@@ -105,7 +105,7 @@
     CGFloat maxItemWidth = 0;
     NSMutableArray *buttonWidthArray = [NSMutableArray array];
     for (NSString *item in itemArray) {
-        CGSize buttonSize = [item boundingRectWithSize:CGSizeMake(self.maxViewWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : FONT(12)} context:nil].size;
+        CGSize buttonSize = [item boundingRectWithSize:CGSizeMake(self.maxViewWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:self.fontSize]} context:nil].size;
         CGFloat width = buttonSize.width;
         self.originButtonHeight = ceilf(buttonSize.height);
         
@@ -127,7 +127,7 @@
 
 - (UIButton *)createItemButtonWithTitle:(NSString *)title {
     UIButton *button = [[UIButton alloc] init];
-    button.titleLabel.font = FONT(12);
+    button.titleLabel.font = [UIFont systemFontOfSize:self.fontSize];
     [self configButtonState:button];
     [button setTitle:title forState:UIControlStateNormal];
     button.layer.cornerRadius = 15;
@@ -181,7 +181,7 @@
     
     for (UIButton *button in self.itemButtonArray) {
         [self configButtonState:button];
-        button.titleLabel.font = FONT(self.fontSize);
+        button.titleLabel.font = [UIFont systemFontOfSize:self.fontSize];
         if (self.itemHeight > 0) {
             button.layer.cornerRadius = self.itemHeight / 2;
         } else {
