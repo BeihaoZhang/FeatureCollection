@@ -108,9 +108,7 @@
     }
     
     self.buttonWidthArray = [buttonWidthArray copy];
-    
     self.maxItemWidth = ceilf(maxItemWidth);
-    
     self.itemButtonArray = [itemButtonArray copy];
     self.height = self.totalHeight;
 }
@@ -212,7 +210,6 @@
         if (i == 0) {
             originX = leftMargin;
             originY = self.edgeInsets.top;
-            
         } else {
             originX = CGRectGetMaxX(previousButton.frame) + interitemSpacing;
             originY = previousButton.frame.origin.y;
