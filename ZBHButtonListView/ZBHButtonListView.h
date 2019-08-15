@@ -30,10 +30,10 @@ typedef NS_ENUM(NSInteger, ButtonChoiceType) {
 
 /// 按钮宽度样式
 typedef NS_ENUM(NSInteger, ButtonWidthStyle) {
-  /// 灵活宽度
-  ButtonFlexibleStyle,
-  /// 固定宽度，根据最长文字设置宽度
-  ButtonFixedStyle
+    /// 灵活宽度
+    ButtonFlexibleStyle,
+    /// 固定宽度，根据最长文字设置宽度
+    ButtonFixedStyle
 };
 
 - (instancetype)initWithChoiceType:(ButtonChoiceType)choiceType widthStyle:(ButtonWidthStyle)widthStyle;
@@ -41,6 +41,10 @@ typedef NS_ENUM(NSInteger, ButtonWidthStyle) {
 @property (nonatomic, strong) NSArray<NSString *> *itemArray;
 /// 当前正在点击的按钮回调
 @property (nonatomic, weak) id <ZBHButtonListViewDelegate> delegte;
+/// 整个视图最大宽度，默认是屏幕宽
+@property (nonatomic, assign) CGFloat maxViewWidth;
+/// 灵活宽度下默认为 (0, 21, 0, 5)，固定宽度下为(0, 21, 0, 21)
+@property (nonatomic, assign) UIEdgeInsets edgeInsets;
 
 /**
  示例如下：
@@ -71,8 +75,6 @@ typedef NS_ENUM(NSInteger, ButtonWidthStyle) {
 @property (nonatomic, assign) CGFloat itemHeight;
 /// 需要展示几列，如果不设置，将自动调整列数。如果设置了，需要注意手动设置itemWidth时产生的影响。
 @property (nonatomic, assign) NSUInteger col;
-/// 首列按钮的左边距，默认为 21.0f
-@property (nonatomic, assign) CGFloat leftMargin;
 /// 水平方向两个按钮之间的间隔，如果设置了，一排按钮的首部和尾部位置与边缘的间距可能不一。
 @property (nonatomic, assign) CGFloat interitemSpacing;
 /// 每行之间的间距，默认为 10.0f

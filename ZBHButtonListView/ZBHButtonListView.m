@@ -25,6 +25,7 @@
 
 - (instancetype)initWithChoiceType:(ButtonChoiceType)choiceType widthStyle:(ButtonWidthStyle)widthStyle {
     if (self = [super init]) {
+        self.maxViewWidth = [UIScreen mainScreen].bounds.size.width;
         self.backgroundColor = [UIColor whiteColor];
         self.choiceType = choiceType;
         self.widthStyle = widthStyle;
@@ -34,6 +35,11 @@
         self.itemButtonSelectedBgColor = [UIColorFromRGB(0xFFB000) colorWithAlphaComponent:0.2];
         self.itemButtonNormalTitleColor = UIColorFromRGB(0x292B33);
         self.itemButtonSelectedTitleColor = UIColorFromRGB(0xFFB000);
+        if (widthStyle == ButtonFixedStyle) { // 固定宽度
+            self.edgeInsets = UIEdgeInsetsMake(0, 21, 0, 21);
+        } else { // 灵活宽度
+            self.edgeInsets = UIEdgeInsetsMake(0, 21, 0, 5);
+        }
     }
     return self;
 }
@@ -77,13 +83,20 @@
 
 - (void)setItemArray:(NSArray<NSString *> *)itemArray {
     [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    
     _itemArray = itemArray;
+    
+    if (itemArray.count == 0) {
+        self.itemButtonArray = nil;
+        [self.selectedButtonArray removeAllObjects];
+        self.height = 0;
+        return;
+    }
+    
     NSMutableArray *itemButtonArray = [NSMutableArray arrayWithCapacity:itemArray.count];
     CGFloat maxItemWidth = 0;
     NSMutableArray *buttonWidthArray = [NSMutableArray array];
     for (NSString *item in itemArray) {
-        CGFloat width = [item boundingRectWithSize:CGSizeMake(kMainScreenWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : FONT(12)} context:nil].size.width;
+        CGFloat width = [item boundingRectWithSize:CGSizeMake(self.maxViewWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : FONT(12)} context:nil].size.width;
         if (self.widthStyle == ButtonFlexibleStyle) {
             [buttonWidthArray addObject:[NSString stringWithFormat:@"%.0f", ceilf(width + 28)]];
         }
@@ -154,7 +167,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+    if (self.itemArray.count == 0) return;
     for (UIButton *button in self.itemButtonArray) {
         [self configButtonState:button];
         button.titleLabel.font = FONT(self.fontSize);
@@ -162,6 +175,10 @@
             button.layer.cornerRadius = self.itemHeight / 2;
         }
     }
+    for (UIButton *button in self.selectedButtonArray) {
+        button.backgroundColor = self.itemButtonSelectedBgColor;
+    }
+    
     if (self.widthStyle == ButtonFixedStyle) {
         [self layoutButtonsWithFixedStyle];
     } else {
@@ -170,9 +187,13 @@
 }
 
 - (void)layoutButtonsWithFlexibleStyle {
+    if (self.itemArray.count == 0) {
+        self.height = 0;
+        return;
+    }
     NSInteger count = self.itemButtonArray.count;
-    CGFloat leftMargin = self.leftMargin > 0? self.leftMargin : 21.0f;
-    CGFloat rightMargin = 5;
+    CGFloat leftMargin = self.edgeInsets.left;
+    CGFloat rightMargin = self.edgeInsets.right;
     
     CGFloat lineSpace = self.lineSpace > 0? self.lineSpace : 10.0f;
     CGFloat height = self.itemHeight > 0? self.itemHeight : 30.0f;
@@ -183,55 +204,59 @@
         UIButton *itemButton = self.itemButtonArray[i];
         
         CGFloat width = [self.buttonWidthArray[i] floatValue];
-        if (width > ([UIScreen mainScreen].bounds.size.width - leftMargin - rightMargin)) {
-            width = [UIScreen mainScreen].bounds.size.width - leftMargin - rightMargin;
+        if (width > (self.maxViewWidth - leftMargin - rightMargin)) {
+            width = self.maxViewWidth - leftMargin - rightMargin;
         }
         CGFloat originX = 0.0f;
         CGFloat originY = 0.0f;
         if (i == 0) {
             originX = leftMargin;
-            originY = 0;
+            originY = self.edgeInsets.top;
             
         } else {
             originX = CGRectGetMaxX(previousButton.frame) + interitemSpacing;
-            if (originX + interitemSpacing + width + rightMargin > [UIScreen mainScreen].bounds.size.width) {
+            originY = previousButton.frame.origin.y;
+            if (originX + interitemSpacing + width + rightMargin > self.maxViewWidth) {
                 originX = leftMargin;
                 originY = CGRectGetMaxY(previousButton.frame) + lineSpace;
             }
-            originY = previousButton.frame.origin.y;
         }
         
         itemButton.frame = CGRectMake(originX, originY, width, height);
         previousButton = itemButton;
     }
-    self.height = CGRectGetMaxY(previousButton.frame);
+    self.height = CGRectGetMaxY(previousButton.frame) + self.edgeInsets.bottom;
 }
 
 - (void)layoutButtonsWithFixedStyle {
+    if (self.itemArray.count == 0) {
+        self.height = 0;
+        return;
+    }
     NSInteger count = self.itemButtonArray.count;
-    CGFloat leftMargin = self.leftMargin > 0? self.leftMargin : 21.0f;
-    CGFloat rightMargin = leftMargin;
+    CGFloat leftMargin = self.edgeInsets.left;
+    CGFloat rightMargin = self.edgeInsets.right;
     
     CGFloat lineSpace = self.lineSpace > 0? self.lineSpace : 10.0f;
     CGFloat width = self.itemWidth > 0? self.itemWidth : (self.maxItemWidth + 14.0f);
     CGFloat height = self.itemHeight > 0? self.itemHeight : 30.0f;
     NSInteger col;
     if (self.interitemSpacing > 0) {
-        col = self.col > 0? self.col : ((kMainScreenWidth - leftMargin - rightMargin - self.interitemSpacing) / (width + self.interitemSpacing));
+        col = self.col > 0? self.col : ((self.maxViewWidth - leftMargin - rightMargin - self.interitemSpacing) / (width + self.interitemSpacing));
     } else {
-        col = self.col > 0? self.col : ((kMainScreenWidth - leftMargin - rightMargin) / width);
+        col = self.col > 0? self.col : ((self.maxViewWidth - leftMargin - rightMargin) / width);
     }
-    CGFloat interitemSpacing = self.interitemSpacing > 0? self.interitemSpacing : ((kMainScreenWidth - leftMargin - rightMargin - (col * width)) / (col - 1));
+    CGFloat interitemSpacing = self.interitemSpacing > 0? self.interitemSpacing : ((self.maxViewWidth - leftMargin - rightMargin - (col * width)) / (col - 1));
     
     CGFloat minInteritemSpacing = 4;
     if (interitemSpacing < minInteritemSpacing) {
         col = col - 1;
-        interitemSpacing = self.interitemSpacing > 0? self.interitemSpacing : ((kMainScreenWidth - leftMargin - rightMargin - (col * width)) / (col - 1));
+        interitemSpacing = self.interitemSpacing > 0? self.interitemSpacing : ((self.maxViewWidth - leftMargin - rightMargin - (col * width)) / (col - 1));
     }
     
     for (int i = 0; i < count; i++) {
         UIButton *itemButton = self.itemButtonArray[i];
-        CGFloat topDistance = (height + lineSpace) * (i / col);
+        CGFloat topDistance = self.edgeInsets.top + (height + lineSpace) * (i / col);
         CGFloat leftDistance = leftMargin + (width + interitemSpacing) * (i % col);
         itemButton.frame = CGRectMake(leftDistance, topDistance, width, height);
     }
@@ -241,14 +266,18 @@
         lines += 1;
     }
     
-    self.height = height * lines + lineSpace * (lines - 1);
+    self.height = height * lines + lineSpace * (lines - 1) + self.edgeInsets.top + self.edgeInsets.bottom;
 }
 
 - (CGFloat)totalHeight {
+    if (self.itemArray.count == 0) {
+        self.height = 0;
+        return 0;
+    }
     if (self.widthStyle == ButtonFixedStyle) {
         [self layoutButtonsWithFixedStyle];
     } else {
-        [self layoutButtonsWithFixedStyle];
+        [self layoutButtonsWithFlexibleStyle];
     }
     return self.height;
 }
