@@ -18,6 +18,7 @@
 @property (nonatomic, assign) CGFloat maxItemWidth;
 @property (nonatomic, strong) NSMutableArray *selectedButtonArray;
 @property (nonatomic, strong) NSArray<NSString *> *buttonWidthArray;
+@property (nonatomic, assign) CGFloat originButtonHeight;
 
 @end
 
@@ -35,6 +36,14 @@
         self.itemButtonSelectedBgColor = [UIColorFromRGB(0xFFB000) colorWithAlphaComponent:0.2];
         self.itemButtonNormalTitleColor = UIColorFromRGB(0x292B33);
         self.itemButtonSelectedTitleColor = UIColorFromRGB(0xFFB000);
+        
+        if (self.widthStyle == ButtonFixedStyle) {
+            self.contentHorizontalMargin = 7.0f;
+        } else {
+            self.contentHorizontalMargin = 14.0f;
+        }
+        self.contentVerticalMargin = 5.0f;
+        
         if (widthStyle == ButtonFixedStyle) { // 固定宽度
             self.edgeInsets = UIEdgeInsetsMake(0, 21, 0, 21);
         } else { // 灵活宽度
@@ -96,9 +105,12 @@
     CGFloat maxItemWidth = 0;
     NSMutableArray *buttonWidthArray = [NSMutableArray array];
     for (NSString *item in itemArray) {
-        CGFloat width = [item boundingRectWithSize:CGSizeMake(self.maxViewWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : FONT(12)} context:nil].size.width;
+        CGSize buttonSize = [item boundingRectWithSize:CGSizeMake(self.maxViewWidth, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : FONT(12)} context:nil].size;
+        CGFloat width = buttonSize.width;
+        self.originButtonHeight = ceilf(buttonSize.height);
+        
         if (self.widthStyle == ButtonFlexibleStyle) {
-            [buttonWidthArray addObject:[NSString stringWithFormat:@"%.0f", ceilf(width + 28)]];
+            [buttonWidthArray addObject:[NSString stringWithFormat:@"%.0f", ceilf(width)]];
         }
         maxItemWidth = width > maxItemWidth? width : maxItemWidth;
         
@@ -166,13 +178,17 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     if (self.itemArray.count == 0) return;
+    
     for (UIButton *button in self.itemButtonArray) {
         [self configButtonState:button];
         button.titleLabel.font = FONT(self.fontSize);
         if (self.itemHeight > 0) {
             button.layer.cornerRadius = self.itemHeight / 2;
+        } else {
+            button.layer.cornerRadius = (self.originButtonHeight + self.contentVerticalMargin * 2) / 2;
         }
     }
+    
     for (UIButton *button in self.selectedButtonArray) {
         button.backgroundColor = self.itemButtonSelectedBgColor;
     }
@@ -194,14 +210,14 @@
     CGFloat rightMargin = self.edgeInsets.right;
     
     CGFloat lineSpace = self.lineSpace > 0? self.lineSpace : 10.0f;
-    CGFloat height = self.itemHeight > 0? self.itemHeight : 30.0f;
+    CGFloat height = self.itemHeight > 0? self.itemHeight : ((self.originButtonHeight + self.contentVerticalMargin * 2));
     
     CGFloat interitemSpacing = self.interitemSpacing > 0? self.interitemSpacing : 15;
     UIButton *previousButton;
     for (int i = 0; i < count; i++) {
         UIButton *itemButton = self.itemButtonArray[i];
         
-        CGFloat width = [self.buttonWidthArray[i] floatValue];
+        CGFloat width = [self.buttonWidthArray[i] floatValue] + self.contentHorizontalMargin * 2;
         if (width > (self.maxViewWidth - leftMargin - rightMargin)) {
             width = self.maxViewWidth - leftMargin - rightMargin;
         }
@@ -235,8 +251,9 @@
     CGFloat rightMargin = self.edgeInsets.right;
     
     CGFloat lineSpace = self.lineSpace > 0? self.lineSpace : 10.0f;
-    CGFloat width = self.itemWidth > 0? self.itemWidth : (self.maxItemWidth + 14.0f);
-    CGFloat height = self.itemHeight > 0? self.itemHeight : 30.0f;
+    CGFloat width = self.itemWidth > 0? self.itemWidth : (self.maxItemWidth + self.contentHorizontalMargin * 2);
+    CGFloat height = self.itemHeight > 0? self.itemHeight : (self.originButtonHeight + self.contentVerticalMargin * 2);
+    
     NSInteger col;
     if (self.interitemSpacing > 0) {
         col = self.col > 0? self.col : ((self.maxViewWidth - leftMargin - rightMargin - self.interitemSpacing) / (width + self.interitemSpacing));

@@ -79,6 +79,10 @@ typedef NS_ENUM(NSInteger, ButtonWidthStyle) {
 @property (nonatomic, assign) CGFloat interitemSpacing;
 /// 每行之间的间距，默认为 10.0f
 @property (nonatomic, assign) CGFloat lineSpace;
+/// 按钮文字水平方向的边距，ButtonFlexibleStyle下默认为14，ButtonFixedStyle下默认为7（如果设置了itemWidth，则属性无效）
+@property (nonatomic, assign) CGFloat contentHorizontalMargin;
+/// 按钮文字竖直方向的边距（如果设置了itemHeight，则属性无效）
+@property (nonatomic, assign) CGFloat contentVerticalMargin;
 
 @end
 
