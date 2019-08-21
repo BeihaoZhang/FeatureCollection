@@ -67,7 +67,9 @@ NSString * const ContainerDataKey = @"ContainerData";
         }
         self.containerViewDict[@(i)] = dict;
         id<CBSSiftContainerViewDelegate> containerView = dict[ContainerViewKey];
-        [containerView resetState];
+        if ([containerView respondsToSelector:@selector(resetState)]) {
+            [containerView resetState];
+        }        
     }
 }
 
