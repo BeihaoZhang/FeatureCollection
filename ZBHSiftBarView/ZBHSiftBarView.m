@@ -53,6 +53,24 @@ NSString * const ContainerDataKey = @"ContainerData";
     return [mDict copy];
 }
 
+- (void)reset {
+    for (int i = 0; i < self.itemTitles.count; i++) {
+        UIButton *button = self.titleButtonArray[i];
+        button.selected = NO;
+        [self configNormalStateWithButton:button];
+        [button setTitle:self.itemTitles[i] forState:UIControlStateNormal];
+        [self updateButtonEdgeInsetsWithButton:button];
+        button.imageView.transform = CGAffineTransformIdentity;
+        NSMutableDictionary *dict = [self.containerViewDict[@(i)] mutableCopy];
+        if (dict) {
+            dict[ContainerDataKey] = nil;
+        }
+        self.containerViewDict[@(i)] = dict;
+        id<CBSSiftContainerViewDelegate> containerView = dict[ContainerViewKey];
+        [containerView resetState];
+    }
+}
+
 - (void)buttonClick:(UIButton *)button {
     [self configSelectStateWithButton:button];
     NSInteger index = [self.titleButtonArray indexOfObject:button];

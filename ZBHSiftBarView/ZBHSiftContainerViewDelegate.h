@@ -14,6 +14,7 @@
 
 - (void)siftContainerViewWithConfirm:(void(^)(NSString *showText, id otherData))confirmBlock;
 - (void)siftContainerViewWithReset:(void (^)(void))resetBlock;
+- (void)resetState;
 /// 当选中某些子项而没有进行确认就收起view，当下次重新展开时，需要恢复到原来的状态
 - (void)restoreState;
 
