@@ -9,6 +9,6 @@
 
 筛选条的封装。创建展开筛选条下方的视图，该视图需要遵守协议 `ZBHSiftContainerViewDelegate`，筛选条上的按钮展开和收起时机不用做判断。目的是为了让筛选条和展开的 view 进行隔离，达到解耦的目的。
 
-### ZBHButtonListView
+### ZBHButtonListView（目前实现方式很low，应该使用UICollectionView实现排列按钮才是，然后子类化UICollectionViewFlowLayout，实现相应代理）
 
 排列按钮，可进行布局配置
