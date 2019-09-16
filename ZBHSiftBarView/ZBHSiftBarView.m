@@ -46,7 +46,7 @@ NSString * const ContainerDataKey = @"ContainerData";
     NSMutableDictionary *mDict = [NSMutableDictionary dictionary];
     for (NSNumber *indexNum in self.containerViewDict.allKeys) {
         NSDictionary *dict = self.containerViewDict[indexNum];
-        if (dict) {
+        if (dict && dict[ContainerDataKey]) {
             [mDict setObject:dict[ContainerDataKey] forKey:indexNum];
         }
     }
