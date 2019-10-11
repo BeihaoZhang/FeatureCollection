@@ -99,10 +99,14 @@ NSString * const ContainerDataKey = @"ContainerData";
                 
                 NSMutableDictionary *dict = [strongSelf.containerViewDict[@(index)] mutableCopy];
                 if (dict) {
-                    dict[ContainerDataKey] = otherData;
+                    if (otherData) {
+                        dict[ContainerDataKey] = otherData;
+                    } else {
+                        [dict removeObjectForKey:ContainerDataKey];
+                    }
                     dict[ContainerViewKey] = strongContainerView;
                 }
-                strongSelf.containerViewDict[@(index)] = dict;
+                strongSelf.containerViewDict[@(index)] = [dict copy];
                 
                 [strongSelf updateButtonStateWithIndex:index];
                 [strongSelf updateButtonEdgeInsetsWithButton:button];
