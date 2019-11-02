@@ -29,6 +29,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZBHSiftBarView : UIView
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+
 - (instancetype)initWithFrame:(CGRect)frame itemTitles:(NSArray<NSString *> *)itemTitles;
 
 @property (nonatomic, weak) id<ZBHSiftBarViewDataSource> dataSource;
